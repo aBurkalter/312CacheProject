@@ -9,7 +9,7 @@ public class Driver {
 		//opening up the input.txt file, replace later
 		Scanner infile = null;
 		try {
-			infile = new Scanner(new FileReader("./src/input.txt"));
+			infile = new Scanner(new FileReader("./src/input.txt")); // args[0], as the file is inital command line input
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 			e.printStackTrace();
