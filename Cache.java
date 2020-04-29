@@ -6,13 +6,13 @@
 // Description:
 // Represents a Cache, with all of the user-inputted fields.
 
-import java.io.*;
+//import java.io.*;
 import java.util.*;
 
 public class Cache {
     // Fields don't need accessors as they are immutable after inital input.
     // Fields don't need getters as they are only accessed from within Cache class.
-    private final int m = 8; // number of bits in memory address
+    //private final int m = 8; // number of bits in memory address
 
     private int C; // cache size in bytes; must be between 8-256
     private int B; // number of bytes per block
@@ -29,39 +29,90 @@ public class Cache {
     Cache() {
         System.out.println("configure the cache:");
 
-        System.out.print("cache size: ");
+        System.out.print("cache size (between 8 and 256): ");
         C = in.nextInt();
-        //if (C < 8 || C > 256)
-            // figure out how to throw exception
-        
-        System.out.print("data block size: ");
+        while (C < 8 || C > 256) {
+        	System.out.println("try again");
+        	C = in.nextInt();
+        }
+             
+        System.out.print("data block size (in bytes): ");
         B = in.nextInt();
 
-        System.out.print("associativity: ");
+        System.out.print("associativity (1, 2, or 4): ");
         E = in.nextInt();
-        //if (!(E == 1 || E == 2 || E == 4))
-            // figure out how to throw exception
+        while (!(E == 1 || E == 2 || E == 4)) {
+        	System.out.println("try again");
+        	E = in.nextInt();
+        }
         
-        System.out.print("replacement policy: ");
+        System.out.print("replacement policy (RR=1, LRU=2): ");
         replacementPolicy = in.nextInt();
-        //if (!(replacementPolicy == 1 || replacementPolicy == 2 || replacementPolicy == 3))
-            // figure out how to throw exception
+        while (!(replacementPolicy == 1 || replacementPolicy == 2 || replacementPolicy == 3)) {
+        	System.out.println("try again");
+        	replacementPolicy = in.nextInt();
+        }
         
-        System.out.print("write hit policy: ");
+        System.out.print("write hit policy (through=1, back=2): ");
         writeHitPolicy = in.nextInt();
-        //if (!(writeHitPolicy == 1 || writeHitPolicy == 2))
-            // figure out how to throw exception
+        while (!(writeHitPolicy == 1 || writeHitPolicy == 2)) {
+        	System.out.println("try again");
+        	writeHitPolicy = in.nextInt();
+        }
         
-        System.out.print("write miss policy: ");
+        System.out.print("write miss policy (write=1 no write=2): ");
         writeMissPolicy = in.nextInt();
-        //if (!(writeMissPolicy == 1 || writeMissPolicy == 2))
-            // figure out how to throw exception
+        while (!(writeMissPolicy == 1 || writeMissPolicy == 2)) {
+        	System.out.println("try again");
+        	writeMissPolicy = in.nextInt();
+        }
         
-        System.out.println("\ncache successfully configured!");
+        S = C / (B * E);
+        
+        System.out.println("cache successfully configured!\n");
     }
 
-
-    public static void main(String[] args) {
-        System.out.println("Cache Tests");
+    public String getRP(int r) {
+    	if(r == 1) {
+    		return "random replacement";
+    	}else if(r == 2) {
+    		return "least recently used";
+    	}else {}
+    	 	return "invalid replacement policy";
     }
+    
+    public String getHP(int h) {
+    	if(h == 1) {
+    		return "write-through";
+    	}else if(h == 2) {
+    		return "write-back";
+    	}else {}
+    	 	return "invalid replacement policy";
+    }
+    
+    public String getMP(int m) {
+    	if(m == 1) {
+    		return "write-allocate";
+    	}else if(m == 2) {
+    		return "no write-allocate";
+    	}else {}
+    	 	return "invalid replacement policy";
+    }
+    
+    public void printConfiguration() {
+    	System.out.println("Cache size: " + C);
+    	System.out.println("Data block size: " + B);
+    	System.out.println("Associativity: " + E);
+    	System.out.println("Number of sets: " + S);
+    	System.out.println("Replacement Policy: " + getRP(replacementPolicy));
+    	System.out.println("Write Hit Politc: " + getHP(writeHitPolicy));
+    	System.out.println("Write Miss Policy: " + getMP(writeMissPolicy));
+    }
+        
+    public void cacheRead(String addr) {}
+    public void cacheWrite(String addr, String data) {}
+    public void cacheFlush() {}
+    public void cacheView() {}
+    public void cacheDump() {}
+    
 }

@@ -12,12 +12,9 @@ import java.util.*;
 public class RAM {
 	private ArrayList<String> contents; //the simulated memory
 
-	//initializers, the second one can probably be deleted
+	//initializer
 	public RAM() {
 		contents = new ArrayList<String>();
-	}
-	public RAM(ArrayList<String> contents) {
-		this.contents = contents;
 	}
 
 	//pushes lines to the back of the memory, used when initializing the memory
@@ -25,11 +22,11 @@ public class RAM {
 		contents.add(in);
     }
     
-    public void fillRAM() {
-        //opening up the input.txt file, replace later
+    public void fillRAM(String in) {
+        //opening up the input.txt file
 		Scanner infile = null;
 		try {
-			infile = new Scanner(new FileReader("input.txt")); // args[0], as the file is inital command line input
+			infile = new Scanner(new FileReader(in));
 		} catch (FileNotFoundException e) {
 			System.out.println("File not found");
 			e.printStackTrace();
@@ -50,5 +47,8 @@ public class RAM {
 			System.out.println(i + "\t" + contents.get(i));
 		}
 	}
+	
+	public void memoryView() {}
+	public void memoryDump() {}
 	
 }
