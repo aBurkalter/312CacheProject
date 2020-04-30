@@ -41,6 +41,10 @@ public class RAM {
 		}
     }
 	
+    public String get(int in) {
+    	return contents.get(in);
+    }
+    
 	//prints the contents of the memory and the corresponding line numbers
 	public void printContents() {
 		for (int i = 0; i < 256; i++) {

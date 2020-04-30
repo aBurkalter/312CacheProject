@@ -45,7 +45,7 @@ public class cachesimulator {
     		line = command.split(" ");
     		if ((line[0].equals("cache-read")) || (line[0].equals("1"))) {
     			System.out.println("reading cache\n");
-    			cache.cacheRead(line[1]); //input should be 0x18 format
+    			cache.cacheRead(line[1], memory); //input should be 0x18 format
     		}
     		else if ((line[0].equals("cache-write")) || (line[0].equals("2"))) {
     			System.out.println("writing cache\n");

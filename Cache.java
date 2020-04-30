@@ -28,7 +28,8 @@ public class Cache {
     private int writeMissPolicy;   // either 1 or 2; 1 = write-allocate, 2 = no-write-allocate
 
     
-    protected String[][][] cache; //[tag][set][2+block] (first two Strings in line are V and D bit
+//    private String[][][] cache; //[tag][set][2+block] (first two Strings in line are V and D bit
+    private Byte[][][] cache;
     
     private Scanner in = new Scanner(System.in);
 
@@ -79,12 +80,24 @@ public class Cache {
         b = (int) (Math.log(B) / Math.log(2));
         s = (int) (Math.log(S) / Math.log(2));
         t = m - s - b;
-        int T = (int) Math.pow(2, t);
-        cache = new String[T][S][B+2];
+//        int T = (int) Math.pow(2, t);
+//        cache = new String[S][E][B+2];
+        cache = new Byte[S][E][B+3];
         
-//        System.out.println("");
+        
+        for (int i = 0; i < S; i++) {
+        	for (int j = 0; j < E; j++) {
+        		for (int k = 0; k < (B+3); k++) {
+        			cache[i][j][k] = new Byte("");
+        		}
+        		cache[i][j][0].setKey("00");
+        		cache[i][j][1].setKey("0");
+        		cache[i][j][2].setKey("0");
+        	}
+        }
+        
         System.out.println("cache successfully configured!");
-        System.out.println("t bits: " + t + ", s bits: " + s + ", b bits: " + b);
+//        System.out.println("t bits: " + t + ", s bits: " + s + ", b bits: " + b);
         System.out.println("\n");
     }
 
@@ -184,35 +197,47 @@ public class Cache {
     public String binaryToHex(String in) {
     	int L = in.length();
     	if (L > 4) {
-    		return binaryToHex(in.substring(0, L-5)) + binaryToHex(in.substring(L - 4,L - 1));
+    		return binaryToHex(in.substring(0, L-5)) + binaryToHex(in.substring(L - 4, L));
     	}
     	
     	int value = binaryToDecimal(in);
     	return decimalToHex(value);
     }
         
-    public void cacheRead(String inHex) {
+    public void cacheRead(String inHex, RAM memory) {
     	String inBinary = hexToBinary(inHex);
+    	int inDecimal = binaryToDecimal(inBinary);
     	
-    	String tagBinary = inBinary.substring(0, t-1);
+    	String tagBinary = inBinary.substring(0, t);
     	String tagHex = binaryToHex(tagBinary);
     	int tagDecimal = binaryToDecimal(tagBinary);
     	
-    	String setBinary = inBinary.substring(t, t+s-1);
+    	String setBinary = inBinary.substring(t, t+s);
     	int setDecimal = binaryToDecimal(setBinary);
     	
     	String blockBinary = inBinary.substring(t+s);
     	int blockDecimal = binaryToDecimal(blockBinary);
+    	int blockIndex = blockDecimal + 3;
     	
+    	int tagIndex = 0;
+    	for (int i = 0; i < cache[1].length; i++) {
+    		if (cache[setDecimal][i][blockIndex].getKey().equals(tagHex)) {
+    			tagIndex = i;
+    		}
+    	}
     	
-    	String value = cache[tagDecimal][setDecimal][blockDecimal+2];
-    	boolean hit = true;
-    	if (value.contentEquals("")) hit = false;
-    	
+    	String value = cache[setDecimal][tagIndex][blockIndex].getKey();
     	String hitString = "no";
-    	int eviction_line = tagDecimal;
+    	int eviction_line = 0; //replace depending on miss policy i think
     	String ram_address = inHex;
+    	boolean hit = true;
     	
+    	if (value.contentEquals("")) {
+    		hit = false;
+    		value = memory.get(inDecimal);
+    		//find an eviction line
+    	}
+    	    	
     	if (hit) {
     		hitString = "yes";
     		eviction_line = -1;
@@ -224,11 +249,12 @@ public class Cache {
     	System.out.println("hit:" + hitString);
     	System.out.println("eviction_line:" + eviction_line);
     	System.out.println("ram_address:" + ram_address);//
-    	System.out.println("data:" + value);
+    	System.out.println("data:" + value + "\n");
     }
     
     public void cacheWrite(String addr, String data) {}
     public void cacheFlush() {}
+    
     public void cacheView() {
     	int lengthX = cache.length;
     	int lengthY = cache[1].length;
@@ -236,19 +262,21 @@ public class Cache {
     	
     	System.out.println(lengthX + " " + lengthY + " " + lengthZ + "\n");
     	
-//    	for (int i = 0; i < lengthX; i++) {
-//    		for (int j = 0; j < lengthY; j++) {
-//    			for (int k = 0; k < lengthZ; k++) {
-//    				if (cache[i][j][k].equals("")) {
-//    					System.out.println("[" + i + "][" + j + "][" + k + "=null\t");
-//    				} else {
-//    					System.out.println("[" + i + "][" + j + "][" + k + "=" + cache[i][j][k] + "\t");
-//    				}
-//    			}
-//    			System.out.print("\n");
-//    		}
-//    		System.out.print("\n");
-//    	}
+    	for (int i = 0; i < lengthX; i++) {
+    		for (int j = 0; j < lengthY; j++) {
+//    			System.out.println("");
+    			for (int k = 0; k < lengthZ; k++) {
+    				if (cache[i][j][k].getKey().equals("")) {
+    					System.out.print("null\t");
+    				} else {
+    					System.out.print(cache[i][j][k].getKey() + "  ");
+    				}
+    			}
+    			System.out.print("\n");
+    		}
+    		System.out.print("\n");
+    	}
+    	System.out.print("\n");
     }
     public void cacheDump() {}
     
