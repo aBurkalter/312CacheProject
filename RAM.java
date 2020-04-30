@@ -12,12 +12,9 @@ import java.util.*;
 public class RAM {
 	private ArrayList<String> contents; //the simulated memory
 
-	//initializers, the second one can probably be deleted
+	//initializer
 	public RAM() {
 		contents = new ArrayList<String>();
-	}
-	public RAM(ArrayList<String> contents) {
-		this.contents = contents;
 	}
 
 	//pushes lines to the back of the memory, used when initializing the memory
@@ -25,13 +22,13 @@ public class RAM {
 		contents.add(in);
     }
     
-    public void fillRAM() {
-        //opening up the input.txt file, replace later
+    public void fillRAM(String in) {
+        //opening up the input.txt file
 		Scanner infile = null;
 		try {
-			infile = new Scanner(new FileReader("input.txt")); // args[0], as the file is inital command line input
+			infile = new Scanner(new FileReader(in));
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("Input file not found");
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -44,10 +41,44 @@ public class RAM {
 		}
     }
 	
+    public String get(int in) {
+    	return contents.get(in);
+    }
+    
 	//prints the contents of the memory and the corresponding line numbers
 	public void printContents() {
 		for (int i = 0; i < 256; i++) {
 			System.out.println(i + "\t" + contents.get(i));
+		}
+	}
+	
+	public void memoryView() {
+		System.out.println("memory_size:" + contents.size());
+		System.out.println("memory_content:");
+		System.out.println("Address:Data");
+		for(int i = 0; i < contents.size(); i++) {
+			if (i % 8 == 0) {
+				System.out.print("0x" + Integer.toHexString(i) + ":" + contents.get(i) + " ");
+			} else if ((i+1) % 8 == 0) {
+				System.out.println(contents.get(i));
+			} else {
+				System.out.print(contents.get(i) + " ");
+			}
+		}
+
+	}
+	public void memoryDump(){
+		try {
+			FileWriter ramWrite = new FileWriter("ram.txt");
+			for(int i = 0; i < contents.size(); i++) {
+				ramWrite.write(contents.get(i) + "\n");
+			}
+			ramWrite.close();
+		}
+		catch(IOException e) {
+			System.out.println("ram.txt not found");
+			e.printStackTrace();
+			System.exit(0);
 		}
 	}
 	
