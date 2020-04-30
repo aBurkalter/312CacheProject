@@ -28,7 +28,7 @@ public class RAM {
 		try {
 			infile = new Scanner(new FileReader(in));
 		} catch (FileNotFoundException e) {
-			System.out.println("File not found");
+			System.out.println("Input file not found");
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -48,7 +48,34 @@ public class RAM {
 		}
 	}
 	
-	public void memoryView() {}
-	public void memoryDump() {}
+	public void memoryView() {
+		System.out.println("memory_size:" + contents.size());
+		System.out.println("memory_content:");
+		System.out.println("Address:Data");
+		for(int i = 0; i < contents.size(); i++) {
+			if (i % 8 == 0) {
+				System.out.print("0x" + Integer.toHexString(i) + ":" + contents.get(i) + " ");
+			} else if ((i+1) % 8 == 0) {
+				System.out.println(contents.get(i));
+			} else {
+				System.out.print(contents.get(i) + " ");
+			}
+		}
+
+	}
+	public void memoryDump(){
+		try {
+			FileWriter ramWrite = new FileWriter("ram.txt");
+			for(int i = 0; i < contents.size(); i++) {
+				ramWrite.write(contents.get(i) + "\n");
+			}
+			ramWrite.close();
+		}
+		catch(IOException e) {
+			System.out.println("ram.txt not found");
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
 	
 }

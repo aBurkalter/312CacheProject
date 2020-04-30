@@ -25,7 +25,7 @@ public class cachesimulator {
         Scanner in = new Scanner(System.in);
         
         boolean continueRunning = true;
-    	String command = "";
+    	String command;
     	String[] line;
     	while(continueRunning) {
     		System.out.println("*** Cache simulator menu ***\n" +
