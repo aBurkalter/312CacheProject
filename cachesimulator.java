@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class cachesimulator {
 
-	public static void main(String[] args) throws InvalidInputException{
+	public static void main(String[] args) throws InvalidInputException {
 		
         RAM memory = new RAM(); // creating the RAM using a custom class
         memory.fillRAM(args[0]);       // fill RAM with values from .txt file
@@ -28,7 +28,7 @@ public class cachesimulator {
     	String command;
     	String[] line;
     	while(continueRunning) {
-    		System.out.println("*** Cache simulator menu ***\n" +
+    		System.out.print("*** Cache simulator menu ***\n" +
     			"type one command:\n" +
     			"1. cache-read\r\n" + 
     			"2. cache-write\r\n" + 
@@ -44,35 +44,35 @@ public class cachesimulator {
     		command = in.nextLine();
     		line = command.split(" ");
     		if ((line[0].equals("cache-read")) || (line[0].equals("1"))) {
-    			System.out.println("reading cache\n");
+//    			System.out.println("cache-read " + line[1]);
     			cache.cacheRead(line[1], memory); //input should be 0x18 format
     		}
     		else if ((line[0].equals("cache-write")) || (line[0].equals("2"))) {
-    			System.out.println("writing cache\n");
+//    			System.out.println("cache-write " + line[1] + " " + line[2]);
     			cache.cacheWrite(line[1], line[2], memory); //input should be 0x18 format
     		}
     		else if ((line[0].equals("cache-flush")) || (line[0].equals("3"))) {
-    			System.out.println("flushing cache\n");
+//    			System.out.println("cache-flush");
     			cache.cacheFlush(); //clear the cache
     		}
     		else if ((line[0].equals("cache-view")) || (line[0].equals("4"))) {
-    			System.out.println("viewing cache\n");
+//    			System.out.println("cache-view");
     			cache.cacheView(); //displays cache content and status
     		}
     		else if ((line[0].equals("memory-view")) || (line[0].equals("5"))) {
-    			System.out.println("viewing memory\n");
+//    			System.out.println("memory-view");
     			memory.memoryView(); //display RAM content and status
     		}
     		else if ((line[0].equals("cache-dump")) || (line[0].equals("6"))) {
-    			System.out.println("dumping cache\n");
+//    			System.out.println("cache-dump");
     			cache.cacheDump(); //dump current state of cache in a cache.txt file
     		}
     		else if ((line[0].equals("memory-dump")) || (line[0].equals("7"))) {
-    			System.out.println("dumping memory\n");
+    			System.out.println("memory-dump");
     			memory.memoryDump(); //dump the RAM content in a ram.txt file
     		}
     		else if((line[0].equals("quit")) || (line[0].equals("8"))) {
-    			System.out.println("Exiting program\n");
+//    			System.out.println("Exiting program\n");
     			continueRunning = false;
     		}
     		else {
