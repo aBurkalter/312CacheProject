@@ -92,7 +92,7 @@ public class Cache {
         		}
         		cache[i][j][0].setKey("0");
         		cache[i][j][1].setKey("0");
-//        		cache[i][j][2].setKey("00");
+        		cache[i][j][2].setKey("0");
         	}
         }
         
@@ -208,8 +208,8 @@ public class Cache {
     	int maxIndex = in[1].length - 1;
     	Random r = new Random();
 //    	return r.nextInt((max - min) + 1) + min;
-//    	return r.nextInt((maxIndex) + 1);
-    	return r.nextInt(maxIndex);
+    	return r.nextInt((maxIndex) + 1);
+//    	return r.nextInt(maxIndex);
     }
     
     public int lruReplace(Byte[][][] in) {
@@ -217,20 +217,26 @@ public class Cache {
     }
     
     public int findLine(Byte[][][] in, int set, int block) {
+    	System.out.println("Finding line");
+    	System.out.println("in[1].length = " + in[1].length);
     	for (int i = 0; i < in[1].length; i++) {
-    		if (in[set][i][2].getKey() == "00") {
+    		if (in[set][i][2].getKey().equals("0")) {
 //    			in[set][1][block].setKey("1");
+    			System.out.println("Found empty line at " + i);
     			return i;
     		}
     	}
     	if (replacementPolicy == 1) { //Random replacement
+    		System.out.println("Returning random line");
     		return randomReplace(in, set, block);
     	} else if (replacementPolicy == 2) { //Least Recently Used
+    		System.out.println("Returning least recently used line");
     		return lruReplace(in);
     	} else {
     		System.out.println("Replacement Policy has illegal value.");
     		System.exit(0);
     	}
+    	System.out.println("Returning -1");
     	return -1;
     }
         
@@ -257,6 +263,8 @@ public class Cache {
     		}
     	}
     	
+    	System.out.println("tagIndex = " + tagIndex);
+    	
     	Byte value = cache[setDecimal][tagIndex][blockIndex];
 //    	cache[setDecimal][tagIndex][2].setKey(tagHex);
     	String hitString = "no";
@@ -266,14 +274,21 @@ public class Cache {
 //    	boolean hit;
     	
     	
-    	if (value.getKey().equals("00")) {
+    	if (cache[setDecimal][tagIndex][2].getKey().equals("0")) {
     		hit = false;
-    		value.setKey(memory.get(inDecimal));
+//    		value.setKey(memory.get(inDecimal));
+    		for (int i = 0; i < cache[1].length; i++) {
+    			cache[setDecimal][tagIndex][i+3].setKey(memory.get(inDecimal + i));
+    		}
     		cache[setDecimal][tagIndex][2].setKey(tagHex);
     		//find an eviction line
-    	} else if (!tagHex.equals(value.getKey())) {
+    	} else if (!(tagHex.equals(cache[setDecimal][tagIndex][2].getKey()))) {
     		hit = false;
     		eviction_line = tagIndex;
+    		for (int i = 0; i < cache[1].length; i++) {
+    			cache[setDecimal][tagIndex][i+3].setKey(memory.get(inDecimal + i));
+    		}
+    		cache[setDecimal][tagIndex][2].setKey(tagHex);
     	}
     	    	
     	if (hit) {
@@ -293,7 +308,19 @@ public class Cache {
     }
     
     public void cacheWrite(String addr, String data) {}
-    public void cacheFlush() {}
+    
+    public void cacheFlush() {
+    	for (int i = 0; i < cache.length; i++) {
+        	for (int j = 0; j < cache[1].length; j++) {
+        		for (int k = 0; k < cache[0][1].length; k++) {
+        			cache[i][j][k].setKey("00");;
+        		}
+        		cache[i][j][0].setKey("0");
+        		cache[i][j][1].setKey("0");
+        		cache[i][j][2].setKey("0");
+        	}
+        }
+    }
     
     public void cacheView() {
     	int lengthX = cache.length;
@@ -317,6 +344,7 @@ public class Cache {
     	}
     	System.out.print("\n");
     }
+    
     public void cacheDump() {}
     
 }
