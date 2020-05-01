@@ -27,78 +27,69 @@ public class Cache {
     private int writeHitPolicy;    // either 1 or 2; 1 = write-through, 2 = write-back
     private int writeMissPolicy;   // either 1 or 2; 1 = write-allocate, 2 = no-write-allocate
 
-    
-//    private String[][][] cache; //[tag][set][2+block] (first two Strings in line are V and D bit
-    private Byte[][][] cache;
+    private Byte[][][] cache;    // [Set][Line][Block]
     
     private Scanner in = new Scanner(System.in);
 
     // constructor which takes in and validates input
-    public Cache() {
-    	
+    public Cache() throws InvalidInputException{
         System.out.println("configure the cache:");
 
-        System.out.print("cache size (between 8 and 256): ");
+        System.out.print("cache size: ");
         C = in.nextInt();
-        while (C < 8 || C > 256) {
-        	System.out.println("try again");
-        	C = in.nextInt();
+        if (C < 8 || C > 256) {
+        	throw new InvalidInputException("Cache size must be between 8-256 bytes.");
         }
              
-        System.out.print("data block size (in bytes): ");
+        System.out.print("data block size: ");
         B = in.nextInt();
 
-        System.out.print("associativity (1, 2, or 4): ");
+        System.out.print("associativity: ");
         E = in.nextInt();
-        while (!(E == 1 || E == 2 || E == 4)) {
-        	System.out.println("try again");
-        	E = in.nextInt();
+        if (!(E == 1 || E == 2 || E == 4)) {
+        	throw new InvalidInputException("Associativity must be 1, 2, or 4.");
         }
         
-        System.out.print("replacement policy (RR=1, LRU=2): ");
+        System.out.print("replacement policy: ");
         replacementPolicy = in.nextInt();
-        while (!(replacementPolicy == 1 || replacementPolicy == 2 || replacementPolicy == 3)) {
-        	System.out.println("try again");
-        	replacementPolicy = in.nextInt();
+        if (!(replacementPolicy == 1 || replacementPolicy == 2 || replacementPolicy == 3)) {
+        	throw new InvalidInputException("The only valid inputs are 1, 2, or 3.");
         }
         
-        System.out.print("write hit policy (through=1, back=2): ");
+        System.out.print("write hit policy: ");
         writeHitPolicy = in.nextInt();
-        while (!(writeHitPolicy == 1 || writeHitPolicy == 2)) {
-        	System.out.println("try again");
-        	writeHitPolicy = in.nextInt();
+        if (!(writeHitPolicy == 1 || writeHitPolicy == 2)) {
+        	throw new InvalidInputException("The only valid inputs are 1 or 2.");
         }
         
-        System.out.print("write miss policy (write=1 no write=2): ");
+        System.out.print("write miss policy: ");
         writeMissPolicy = in.nextInt();
-        while (!(writeMissPolicy == 1 || writeMissPolicy == 2)) {
-        	System.out.println("try again");
-        	writeMissPolicy = in.nextInt();
+        if (!(writeMissPolicy == 1 || writeMissPolicy == 2)) {
+        	throw new InvalidInputException("The only valid inputs are 1 or 2.");
         }
         
         S = C / (B * E);
         b = (int) (Math.log(B) / Math.log(2));
         s = (int) (Math.log(S) / Math.log(2));
         t = m - s - b;
-//        int T = (int) Math.pow(2, t);
-//        cache = new String[S][E][B+2];
-        cache = new Byte[S][E][B+3];
-        
-        
-        for (int i = 0; i < S; i++) {
-        	for (int j = 0; j < E; j++) {
-        		for (int k = 0; k < (B+3); k++) {
-        			cache[i][j][k] = new Byte("00");
-        		}
-        		cache[i][j][0].setKey("0");
-        		cache[i][j][1].setKey("0");
-        		cache[i][j][2].setKey("0");
-        	}
-        }
         
         System.out.println("cache successfully configured!");
-//        System.out.println("t bits: " + t + ", s bits: " + s + ", b bits: " + b);
         System.out.println("\n");
+
+		cache = new Byte[S][E][B+3];
+		
+		// FILL CACHE WITH NULL VALUES
+		for (int i = 0; i < S; i++) {
+			for (int j = 0; j < E; j++) {
+				for (int k = 0; k < (B + 3); k++) {
+					cache[i][j][k] = new Byte("");
+				}
+				cache[i][j][0].setKey("00");
+				cache[i][j][1].setKey("0");
+				cache[i][j][2].setKey("0");
+			}
+		}
+
     }
 
     public String getRP(int r) {
@@ -197,14 +188,14 @@ public class Cache {
     public String binaryToHex(String in) {
     	int L = in.length();
     	if (L > 4) {
-    		return binaryToHex(in.substring(0, L-5)) + binaryToHex(in.substring(L - 4, L));
+    		return binaryToHex(in.substring(0, L-5)) + binaryToHex(in.substring(L - 4,L - 1));
     	}
     	
     	int value = binaryToDecimal(in);
     	return decimalToHex(value);
-    }
-    
-    public int randomReplace(Byte[][][] in, int set, int block) {
+	}
+	
+	public int randomReplace(Byte[][][] in, int set, int block) {
     	int maxIndex = in[1].length - 1;
     	Random r = new Random();
 //    	return r.nextInt((max - min) + 1) + min;
@@ -214,8 +205,8 @@ public class Cache {
     
     public int lruReplace(Byte[][][] in) {
     	return -1;
-    }
-    
+	}
+	
     public int findLine(Byte[][][] in, int set, int block) {
     	System.out.println("Finding line");
     	System.out.println("in[1].length = " + in[1].length);
@@ -238,8 +229,8 @@ public class Cache {
     	}
     	System.out.println("Returning -1");
     	return -1;
-    }
-        
+	}
+	
     public void cacheRead(String inHex, RAM memory) {
     	String inBinary = hexToBinary(inHex);
     	int inDecimal = binaryToDecimal(inBinary);
@@ -305,25 +296,46 @@ public class Cache {
     	System.out.println("eviction_line:" + eviction_line);
     	System.out.println("ram_address:" + ram_address);//
     	System.out.println("data:" + value.getKey() + "\n");
-    }
-    
-    public void cacheWrite(String addr, String data) {}
-    
-    public void cacheFlush() {
-    	for (int i = 0; i < cache.length; i++) {
-        	for (int j = 0; j < cache[1].length; j++) {
-        		for (int k = 0; k < cache[0][1].length; k++) {
-        			cache[i][j][k].setKey("00");;
-        		}
-        		cache[i][j][0].setKey("0");
-        		cache[i][j][1].setKey("0");
-        		cache[i][j][2].setKey("0");
-        	}
-        }
-    }
-    
+    }	
+
+	public void cacheWrite(String hexAddr, String data, RAM memory) {
+		String binAddr = hexToBinary(hexAddr);
+		int decAddr = binaryToDecimal(binAddr);
+    	
+		String binTag = binAddr.substring(0, t);
+		String hexTag = binaryToHex(binTag);
+		int decTag = binaryToDecimal(binTag);
+
+		String binSet = binAddr.substring(t, t+s);
+		int decSet = binaryToDecimal(binSet);
+
+		String binBlock = binAddr.substring(t+s);
+		int decBlock = binaryToDecimal(binBlock);
+		int blockIndex = decBlock + 3;
+
+		if (cache[decTag][decSet][0].getKey() == "1") { // if write-hit
+			// update cache regardless of whether write-through or write-back
+			cache[decTag][decSet][blockIndex] = new Byte(data);
+			if (writeHitPolicy == 1) { // write-through
+				memory.set(decAddr, data);
+			} else { // write-back
+				cache[decTag][decSet][1] = new Byte("1");
+			}
+		} else { // write-miss
+			if (writeMissPolicy == 1) { // write-allocate
+				// fetch block from RAM and store in cache
+				
+
+			} else { // no-write-allocate
+				cache[decTag][decSet][blockIndex] = new Byte(data); // just update RAM
+			}
+		}
+
+		}
+	
+    public void cacheFlush() {}
     public void cacheView() {
-    	int lengthX = cache.length;
+		int lengthX = cache.length;
     	int lengthY = cache[1].length;
     	int lengthZ = cache[0][1].length;
     	
@@ -331,6 +343,7 @@ public class Cache {
     	
     	for (int i = 0; i < lengthX; i++) {
     		for (int j = 0; j < lengthY; j++) {
+    			//System.out.println("");
     			for (int k = 0; k < lengthZ; k++) {
     				if (cache[i][j][k].getKey().equals("")) {
     					System.out.print("null\t");
@@ -344,7 +357,5 @@ public class Cache {
     	}
     	System.out.print("\n");
     }
-    
     public void cacheDump() {}
-    
 }

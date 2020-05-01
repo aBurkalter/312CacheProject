@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class cachesimulator {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidInputException{
 		
         RAM memory = new RAM(); // creating the RAM using a custom class
         memory.fillRAM(args[0]);       // fill RAM with values from .txt file
@@ -49,7 +49,7 @@ public class cachesimulator {
     		}
     		else if ((line[0].equals("cache-write")) || (line[0].equals("2"))) {
     			System.out.println("writing cache\n");
-    			cache.cacheWrite(line[1], line[2]); //input should be 0x18 format
+    			cache.cacheWrite(line[1], line[2], memory); //input should be 0x18 format
     		}
     		else if ((line[0].equals("cache-flush")) || (line[0].equals("3"))) {
     			System.out.println("flushing cache\n");

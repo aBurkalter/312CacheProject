@@ -28,7 +28,7 @@ public class RAM {
 		try {
 			infile = new Scanner(new FileReader(in));
 		} catch (FileNotFoundException e) {
-			System.out.println("Input file not found");
+			System.out.println("File not found");
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -41,15 +41,19 @@ public class RAM {
 		}
     }
 	
-    public String get(int in) {
-    	return contents.get(in);
-    }
-    
 	//prints the contents of the memory and the corresponding line numbers
 	public void printContents() {
 		for (int i = 0; i < 256; i++) {
 			System.out.println(i + "\t" + contents.get(i));
 		}
+	}
+
+	public String get(int in) {
+		return contents.get(in);
+	}
+
+	public void set(int addr, String data) {
+		contents.set(addr, data);
 	}
 	
 	public void memoryView() {
@@ -67,6 +71,7 @@ public class RAM {
 		}
 
 	}
+
 	public void memoryDump(){
 		try {
 			FileWriter ramWrite = new FileWriter("ram.txt");
